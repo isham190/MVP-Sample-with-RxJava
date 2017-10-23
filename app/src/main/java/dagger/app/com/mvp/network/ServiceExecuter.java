@@ -1,13 +1,13 @@
-package dagger.app.com.dagger.network;
+package dagger.app.com.mvp.network;
 
 import android.util.Log;
 
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import org.simpleframework.xml.convert.AnnotationStrategy;
+import org.simpleframework.xml.core.Persister;
 
 import java.io.IOException;
 
-import dagger.app.com.dagger.model.Channel;
+import dagger.app.com.mvp.model.Feed;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
@@ -21,7 +21,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
@@ -56,28 +55,29 @@ public class ServiceExecuter {
                     }
                 }).build();
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).client(okHttpClient).addConverterFactory(SimpleXmlConverterFactory.create()).addConverterFactory(ScalarsConverterFactory.create()).addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).client(okHttpClient).addConverterFactory(SimpleXmlConverterFactory.create(new Persister(new AnnotationStrategy()))).addConverterFactory(ScalarsConverterFactory.create()).addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build();
         service = retrofit.create(NetworkService.class);
 
-        service.getPopularPosts().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).onErrorResumeNext(new Function<Throwable, ObservableSource<? extends Channel>>() {
+        service.getPopularPosts().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).onErrorResumeNext(new Function<Throwable, ObservableSource<? extends Feed>>() {
             @Override
-            public ObservableSource<? extends Channel> apply(@NonNull Throwable throwable) throws Exception {
+            public ObservableSource<? extends Feed> apply(@NonNull Throwable throwable) throws Exception {
                 return Observable.error(throwable);
             }
-        }).subscribe(new Observer<Channel>() {
+        }).subscribe(new Observer<Feed>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
                 Log.i(TAG, "onSubscribe: ");
             }
 
             @Override
-            public void onNext(@NonNull Channel channel) {
-                Log.i(TAG, "onNext: "+channel.getTitle());
-                listener.fetchCompleted(channel);
+            public void onNext(@NonNull Feed Feed) {
+                Log.i(TAG, "onNext: "+Feed.getChannel().getTitle());
+                listener.fetchCompleted(Feed);
             }
 
             @Override
             public void onError(@NonNull Throwable e) {
+                listener.fetchFailed();
                 Log.e(TAG, "onError: "+ e.getLocalizedMessage());
             }
 
@@ -90,7 +90,7 @@ public class ServiceExecuter {
     }
 
     public interface OnFetchCompleteListener {
-        void fetchCompleted(Channel channel);
+        void fetchCompleted(Feed feed);
 
         void fetchFailed();
     }

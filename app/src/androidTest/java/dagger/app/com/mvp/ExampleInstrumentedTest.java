@@ -1,4 +1,4 @@
-package dagger.app.com.dagger;
+package dagger.app.com.mvp;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

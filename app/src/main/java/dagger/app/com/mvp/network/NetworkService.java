@@ -1,7 +1,7 @@
-package dagger.app.com.dagger.network;
+package dagger.app.com.mvp.network;
 
 
-import dagger.app.com.dagger.model.Channel;
+import dagger.app.com.mvp.model.Feed;
 import io.reactivex.Observable;
 import retrofit2.http.GET;
 
@@ -12,5 +12,5 @@ import retrofit2.http.GET;
 public interface NetworkService {
 
     @GET("popular.rss")
-    Observable<Channel> getPopularPosts();
+    Observable<Feed> getPopularPosts();
 }

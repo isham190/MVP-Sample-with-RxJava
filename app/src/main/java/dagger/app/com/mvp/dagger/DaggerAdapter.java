@@ -1,14 +1,19 @@
-package dagger.app.com.dagger.dagger;
+package dagger.app.com.mvp.dagger;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import dagger.app.com.dagger.R;
+import dagger.app.com.mvp.R;
 
 /**
  * Created by 611399999 on 04/10/2017.
@@ -16,9 +21,12 @@ import dagger.app.com.dagger.R;
 
 public class DaggerAdapter extends RecyclerView.Adapter<DaggerAdapter.DaggerViewHolder> {
 
+    private static final String TAG = DaggerAdapter.class.getSimpleName();
     private final RepositoryListPresenter presenter;
+    private final Context context;
 
-    public DaggerAdapter(RepositoryListPresenter presenter) {
+    public DaggerAdapter(Context context, RepositoryListPresenter presenter) {
+        this.context = context;
         this.presenter = presenter;
     }
 
@@ -40,11 +48,14 @@ public class DaggerAdapter extends RecyclerView.Adapter<DaggerAdapter.DaggerView
     public class DaggerViewHolder extends RecyclerView.ViewHolder implements RepositoryRowView {
 
 
-        @BindView(R.id.name)
+        @BindView(R.id.feed_item_name)
         TextView titleTextView;
 
-        @BindView(R.id.descption)
+        @BindView(R.id.feed_item_descption)
         TextView descriptionTextView;
+
+        @BindView(R.id.feed_item_iv)
+        ImageView itemImageView;
 
         public DaggerViewHolder(View itemView) {
             super(itemView);
@@ -59,6 +70,12 @@ public class DaggerAdapter extends RecyclerView.Adapter<DaggerAdapter.DaggerView
         @Override
         public void setDescription(String description) {
             descriptionTextView.setText(description);
+        }
+
+        @Override
+        public void setItemImage(String url) {
+            Log.i(TAG, "setItemImage: "+url);
+            Picasso.with(context).load(url).into(itemImageView);
         }
     }
 }

@@ -1,8 +1,7 @@
-package dagger.app.com.dagger.dagger;
+package dagger.app.com.mvp.dagger;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 /**
  * Created by 611399999 on 05/10/2017.
